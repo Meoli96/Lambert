@@ -1,0 +1,60 @@
+# Lambert Problem Solver for Mars and Venus
+
+This project is a university assignment that implements a solution to the Lambert problem for Mars and Venus. The Lambert problem is a classic problem in celestial mechanics that involves determining the orbit that passes through two points in a given amount of time.
+
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+- C++ Compiler with support for C++20
+- CMake version 3.12 or higher
+
+### Building
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/lambert.git
+```
+
+2. Navigate to the project directory
+```bash
+cd lambert
+```
+
+3. Create a build directory and navigate to it
+```bash
+mkdir build && cd build
+```
+
+4. Run CMake and compile the project
+```bash
+cmake .. && make
+```
+
+## Usage
+
+After building the project, you can run the program with:
+
+```bash
+./lambert
+```
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+- Our professor for providing the assignment and guidance
+- The open-source community for the valuable tools and libraries used in this project
+
+Next steps:
+- Replace the placeholder URL in the `git clone` command with the actual URL of your repository.
+- If you have a `CONTRIBUTING.md` or `LICENSE.md` file, update the links accordingly.
+- Customize the `Acknowledgments` section as per your requirements.
