@@ -12,15 +12,15 @@ set(SRC_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
-set(SFT_SOURCES
+set(LMB_SOURCES
     # Source file 
     ${SRC_DIR}/main.cpp
-    ${SRC_DIR}/Lambert.cpp
+
  
 )
 
 
-set(SFT_HEADERS
+set(LMB_HEADERS
     # Headers file 
     ${INC_DIR}/Lambert.hpp
 
@@ -56,8 +56,8 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 
 add_executable(
     ${PROJECT_NAME}
-    ${SFT_SOURCES}
-    ${SFT_HEADERS}
+    ${LMB_SOURCES}
+    ${LMB_HEADERS}
 )
 
 
@@ -75,3 +75,8 @@ target_include_directories(
     PRIVATE
     ${INC_DIR}
 )
+
+
+include_directories(/usr/local/include/IO)
+find_library(IO_Astrodynamics_LIB NAMES libIO.Astrodynamics.so)
+target_link_libraries(Lambert ${IO_Astrodynamics_LIB})

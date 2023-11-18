@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/meoli/Coding/Magistrale/Interplanetary/Lambert/build",
+  "command": "/usr/bin/g++ -I/home/meoli/Coding/Magistrale/Interplanetary/Lambert/include -I/usr/local/include/IO  -Wno-unused-parameter -g -std=gnu++20 -Wall -Wextra -Wpedantic -O0 -o CMakeFiles/Lambert.dir/src/main.cpp.o -c /home/meoli/Coding/Magistrale/Interplanetary/Lambert/src/main.cpp",
+  "file": "/home/meoli/Coding/Magistrale/Interplanetary/Lambert/src/main.cpp",
+  "output": "CMakeFiles/Lambert.dir/src/main.cpp.o"
+}
+]
