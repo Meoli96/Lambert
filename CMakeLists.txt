@@ -23,6 +23,8 @@ set(LMB_SOURCES
 set(LMB_HEADERS
     # Headers file 
     ${INC_DIR}/Lambert.hpp
+    ${INC_DIR}/Utils.hpp
+    ${INC_DIR}/ThreadPool.hpp
 
 )
 
