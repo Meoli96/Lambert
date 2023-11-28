@@ -15,8 +15,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
 set(LMB_SOURCES
     # Source file 
     ${SRC_DIR}/main.cpp
-
- 
 )
 
 
@@ -78,7 +76,6 @@ target_include_directories(
     ${INC_DIR}
 )
 
-
-include_directories(/usr/local/include/IO)
-find_library(IO_Astrodynamics_LIB NAMES libIO.Astrodynamics.so)
+include_directories(/home/meoli/Coding/cspice/include)
+find_library(CSPICE_LIB NAMES cspice PATHS /home/meoli/Coding/cspice/lib)
 target_link_libraries(Lambert ${IO_Astrodynamics_LIB})

@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_Lambert: phony || CMakeFiles/Lambert.dir
 build CMakeFiles/Lambert.dir/src/main.cpp.o: CXX_COMPILER__Lambert_unscanned_Debug /home/meoli/Coding/Magistrale/Interplanetary/Lambert/src/main.cpp || cmake_object_order_depends_target_Lambert
   DEP_FILE = CMakeFiles/Lambert.dir/src/main.cpp.o.d
   FLAGS = -Wno-unused-parameter -g -std=gnu++20 -Wall -Wextra -Wpedantic -O0
-  INCLUDES = -I/home/meoli/Coding/Magistrale/Interplanetary/Lambert/include -I/usr/local/include/IO
+  INCLUDES = -I/home/meoli/Coding/Magistrale/Interplanetary/Lambert/include -I/home/meoli/Coding/cspice/include
   OBJECT_DIR = CMakeFiles/Lambert.dir
   OBJECT_FILE_DIR = CMakeFiles/Lambert.dir/src
 

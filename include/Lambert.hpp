@@ -1,12 +1,11 @@
-#include <IO>
+#include <SpiceUsr.h>
+
 #include <cmath>
 #include <span>
 
 #include "Utils.hpp"
 
-double LambertSolve(double r1[3], double r2[3], double dt, bool prograde = 1) {
-    double alpha, beta;
-
+double LambertSolve(double r1[6], double r2[6], double dt, bool prograde = 1) {
     double r1_norm = sqrt(pow(r1[0], 2) + pow(r1[1], 2) +
                           pow(r1[2], 2));  // Distance between r1 and origin
     double r2_norm = sqrt(pow(r2[0], 2) + pow(r2[1], 2) +
@@ -62,8 +61,14 @@ double LambertSolve(double r1[3], double r2[3], double dt, bool prograde = 1) {
         // Compute velocity at r1 and r2
         double v1[3], v2[3];
         for (size_t i = 0; i < 3; ++i) {
-            v1[i] = (r2[i] - f * r1[i]) / g;
-            v2[i] = (g_dot * r2[i] - r1[i]) / g;
+            v1[i] = (r2[i] - f * r1[i]) / g;  // Remove Earth velociy
+            v2[i] =
+                (g_dot * r2[i] - r1[i]) / g;  // Remove this from Mars velocity
+
+            for (size_t i = 0; i < 3; ++i) {
+                v1[i] -= r1[i + 3];
+                v2[i] = r2[i + 3] - v2[i];
+            }
         }
 
         // Or i could return abs(v2-v1) as deltaV
@@ -77,35 +82,29 @@ double LambertSolve(double r1[3], double r2[3], double dt, bool prograde = 1) {
     }
 }
 
-int computeDV(size_t i, size_t j, std::span<uint> dep_days,
-              std::span<uint> arr_days, double** res_v, double** res_m) {
+int computeDV(size_t i, size_t j, std::span<SpiceDouble> dep_days,
+              std::span<SpiceDouble> arr_days, double& res_v, double& res_m) {
     // Compute state of Earth at departure
-    IO::Astrodynamics::State earth_state = IO::Astrodynamics::GetState(
-        "Earth", dep_days[i], IO::Astrodynamics::ReferenceFrame::J2000);
-
-    const double r_earth[3] = {state_earth.position[0], state_earth.position[1],
-                               state_earth.position[2]};
+    SpiceDouble state_earth[6];
+    spkezr_c("EARTH", arr_days[j], "J2000", "NONE", "SUN", state_earth,
+             nullptr);
 
     // Compute state of Venus at arrival
 
-    IO::Astrodynamics::State state_venus = IO::Astrodynamics::GetState(
-        "Venus", arr_days[j], IO::Astrodynamics::ReferenceFrame::J2000);
+    SpiceDouble state_venus[6];
+    spkezr_c("VENUS", arr_days[j], "J2000", "NONE", "SUN", state_venus,
+             nullptr);
 
-    IO::Astrodynamics::State state_mars = IO::Astrodynamics::GetState(
-        "Mars", arr_days[j], IO::Astrodynamics::ReferenceFrame::J2000);
+    // Compute state of Mars at arrival
+    SpiceDouble state_mars[6];
+    spkezr_c("MARS", arr_days[j], "J2000", "NONE", "SUN", state_mars, nullptr);
 
     double dt = arr_days[j] - dep_days[i];
 
     // Lambert - Get deltaV
 
-    double r_venus[3] = {state_venus.position[0], state_venus.position[1],
-                         state_venus.position[2]};
-
-    double r_mars[3] = {state_mars.position[0], state_mars.position[1],
-                        state_mars.position[2]};
-
-    double deltaV_v = LambertSolve(r_earth, r_venus, dt);
-    double deltaV_m = LambertSolve(r_earth, r_mars, dt);
+    double deltaV_v = LambertSolve(state_earth, state_venus, dt);
+    double deltaV_m = LambertSolve(state_earth, state_mars, dt);
 
     // Compute deltaV
 
@@ -116,6 +115,9 @@ int computeDV(size_t i, size_t j, std::span<uint> dep_days,
     if (deltaV_m > 7.5) {
         deltaV_m = 0;
     }
-    res_mat_v[i][j] = deltaV_v;
-    res_mat_m[i][j] = deltaV_m;
+    res_v = deltaV_v;
+    res_m = deltaV_m;
+    
+
+    return 0;
 }

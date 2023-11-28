@@ -1,8 +1,11 @@
-#include <KernelsLoader.hpp>
+#include <SpiceUsr.h>
+#include <matplot/matplot.h>
+#include <Lambert.hpp>
 #include <ThreadPool.hpp>
-
+#include <Utils.hpp>
 #include <iostream>
 #include <span>
+#include <string>
 #include <thread>
 #include <vector>
 // #include io-aerospace
@@ -14,70 +17,75 @@ const uint step = 1;  // Step in days
 
 int main() {
     // Load kernel
-    IO::Astrodynamics::Kernels::KernelsLoader::Load("Data/SolarSystem");
+    furnsh_c("kernels/lsk/naif0012.tls");  // Leap seconds kernel
+    furnsh_c("kernels/spk/de432s.bsp");    // Planetary ephemeris kernel
+    furnsh_c("kernels/pck/pck00010.tpc");  // Leap seconds kernel
+
     // Define vector of departure days, 1 day step for 365 days
-    std::vector<uint> departure_days(365);
+    std::vector<SpiceDouble> departure_days(365 * 4);
     // Define vector of arrival days, from 3 months to 4 years from departure, 1
     // day step
-    std::vector<uint> arrival_days(365 * 4 - 90);
+    std::vector<SpiceDouble> arrival_days(365 * 4 - 90);
+    std::span<SpiceDouble> dep_span(departure_days);
+    std::span<SpiceDouble> trav_span(arrival_days);
 
-    std::span dep_span(departure_days);
-    std::span trav_span(arrival_days);
+    // Fill departure days vector starting from 1 September 2030
 
-// Fill departure days vector starting from 1 September 2030
-std:
-    string date = "2030-09-01";
+    std::string dep_date = "2030-09-01";
+    SpiceDouble et_dep;
+    str2et_c(dep_date.c_str(), &et_dep);
     for (size_t i = 0; i < departure_days.size(); ++i) {
-        departure_days[i] = IO::Time::DateToSeconds(date);
-        date = IO::Time::SecondsToDate(departure_days[i] + days_in_seconds);
+        departure_days[i] = et_dep + i * days_in_seconds;
     }
-    Janu
 
-        // Fill travel times vector starting from 3 months after 1 September
-        // 2030
-        date = "2030-12-01";
+    // Fill travel times vector starting from 3 months after 1 September
+    // 2030
+    std::string arr_date = "2030-12-01";
+    SpiceDouble et_arr;
+    str2et_c(arr_date.c_str(), &et_arr);
+
     for (size_t i = 0; i < arrival_days.size(); ++i) {
-        arrival_days[i] = IO::Time::DateToSeconds(date);
-        date = IO::Time::SecondsToDate(arrival_days[i] + days_in_seconds);
+        arrival_days[i] = et_arr + i * days_in_seconds;
     }
+    double** res_mat_v = new double*[departure_days.size()];
+    double** res_mat_m = new double*[departure_days.size()];
 
+    for (size_t i = 0; i < departure_days.size(); ++i) {
+        res_mat_v[i] = new double[arrival_days.size()];
+        res_mat_m[i] = new double[arrival_days.size()];
+    }
     // i is departure day, j is travel time
-    double res_mat_v[departure_days.size()][arrival_days.size()];
-    double res_mat_m[departure_days.size()][arrival_days.size()];
-
+    using namespace thread;
     // Create thread pool
-    ThreadPool pool(6);
+    ThreadPool<int(size_t, size_t, std::span<SpiceDouble>,
+                   std::span<SpiceDouble>, double&, double&)>
+        pool(computeDV);
 
     // Add jobs to thread pool
     for (size_t i = 0; i < departure_days.size(); ++i) {
         for (size_t j = 0; j < arrival_days.size(); ++j) {
-            pool.addjob(computeDV, i, j, dep_span, trav_span, res_mat_v,
-                        res_mat_m);
+            pool.addjob(i, j, dep_span, trav_span, res_mat_v[i][j], res_mat_m[i][j]);
         }
     }
     // Wait for jobs to finish
     pool.wait();
     std::cout << "Done!" << std::endl;
 
+    // Plot results
+    matplot::figure();
+    matplot::contour(res_mat_v, departure_days.size(), arrival_days.size());
+    matplot::title("DeltaV to Venus");
+    matplot::xlabel("Departure day");
+    matplot::ylabel("Travel time");
+    matplot::save("deltaV_v.png");
 
-    
+    matplot::figure();
+    matplot::contour(res_mat_m, departure_days.size(), arrival_days.size());
+    matplot::title("DeltaV to Mars");
+    matplot::xlabel("Departure day");
+    matplot::ylabel("Travel time");
+    matplot::save("deltaV_m.png");
 
-   
-    // join threads here
-
-    // Plot results with matplotlib-cpp
-    // std::vector<double> x_axis;
-    // std::vector<double> y_axis;
-    // for (size_t i = 0; i < departure_days.size(); ++i) {
-    //     for (size_t j = 0; j < arrival_days.size(); ++j) {
-    //         x_axis.push_back(departure_days[i]);
-    //         y_axis.push_back(arrival_days[j]);
-    // add dv as gradient of color
-
-    //     }
-    // }
-    // plt::plot(x_axis, y_axis, "o");
-    // plt::show();
 
     return 0;
 }
