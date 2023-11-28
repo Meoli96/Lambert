@@ -37,7 +37,7 @@ double newton_iter(
     if (args != nullptr) {
         double x = x0;
 
-        assert(sizeof(args) == 4 * sizeof(double));
+      
         double t = args[0];
         double A = args[1];
         double r1_mod = args[2];

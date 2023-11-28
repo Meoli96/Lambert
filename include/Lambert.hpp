@@ -85,19 +85,20 @@ double LambertSolve(double r1[6], double r2[6], double dt, bool prograde = 1) {
 int computeDV(size_t i, size_t j, std::span<SpiceDouble> dep_days,
               std::span<SpiceDouble> arr_days, double& res_v, double& res_m) {
     // Compute state of Earth at departure
-    SpiceDouble state_earth[6];
-    spkezr_c("EARTH", arr_days[j], "J2000", "NONE", "SUN", state_earth,
-             nullptr);
+    SpiceDouble state_earth[6]{0};
+    SpiceDouble lt = 0;
+    SpiceDouble state_venus[6]{0};
+    SpiceDouble state_mars[6]{0};
+
+    spkezr_c("EARTH", dep_days[i], "J2000", "NONE", "SUN", state_earth, &lt);
 
     // Compute state of Venus at arrival
 
-    SpiceDouble state_venus[6];
-    spkezr_c("VENUS", arr_days[j], "J2000", "NONE", "SUN", state_venus,
-             nullptr);
+    spkezr_c("VENUS", arr_days[j], "J2000", "NONE", "SUN", state_venus, &lt);
 
     // Compute state of Mars at arrival
-    SpiceDouble state_mars[6];
-    spkezr_c("MARS", arr_days[j], "J2000", "NONE", "SUN", state_mars, nullptr);
+
+    spkezr_c("MARS", arr_days[j], "J2000", "NONE", "SUN", state_mars, &lt);
 
     double dt = arr_days[j] - dep_days[i];
 
