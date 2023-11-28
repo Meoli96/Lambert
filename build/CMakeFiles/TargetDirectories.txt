@@ -1,3 +1,0 @@
-/home/meoli/Coding/Magistrale/Interplanetary/Lambert/build/CMakeFiles/Lambert.dir
-/home/meoli/Coding/Magistrale/Interplanetary/Lambert/build/CMakeFiles/edit_cache.dir
-/home/meoli/Coding/Magistrale/Interplanetary/Lambert/build/CMakeFiles/rebuild_cache.dir

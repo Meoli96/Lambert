@@ -76,6 +76,6 @@ target_include_directories(
     ${INC_DIR}
 )
 
-include_directories(/home/meoli/Coding/cspice/include)
+include_directories(/home/peppe/Coding/cspice/include)
 find_library(CSPICE_LIB NAMES cspice PATHS /home/meoli/Coding/cspice/lib)
 target_link_libraries(Lambert ${IO_Astrodynamics_LIB})

@@ -8,8 +8,7 @@
 #include <string>
 #include <thread>
 #include <vector>
-// #include io-aerospace
-// #include matplotlib-cpp
+
 
 const uint days_in_seconds = 86400;
 
