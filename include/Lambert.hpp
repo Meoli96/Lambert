@@ -46,7 +46,7 @@ double LambertSolve(double r1[6], double r2[6], double dt, bool prograde = 1) {
         z0 += 0.1;
     }
     double tol = 1e-8;
-    double args[4] = {A, r1_norm, r2_norm, dt};
+    double args[4] = {dt, A, r1_norm, r2_norm};
 
     double z_n = newton_iter(F, dFdz, z0, tol, 1000, args);
 
@@ -117,7 +117,6 @@ int computeDV(size_t i, size_t j, std::span<SpiceDouble> dep_days,
     }
     res_v = deltaV_v;
     res_m = deltaV_m;
-    
 
     return 0;
 }

@@ -38,11 +38,10 @@ double newton_iter(
         double x = x0;
 
         assert(sizeof(args) == 4 * sizeof(double));
-
-        double A = args[0];
-        double r1_mod = args[1];
-        double r2_mod = args[2];
-        double t = args[3];
+        double t = args[0];
+        double A = args[1];
+        double r1_mod = args[2];
+        double r2_mod = args[3];
 
         double fx = f(x, t, A, r1_mod, r2_mod);
         int i = 0;
@@ -53,6 +52,7 @@ double newton_iter(
         }
         return x;
     }
+    return 0;
 }
 
 double S(double z) {

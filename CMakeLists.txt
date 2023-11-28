@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(Lambert CXX)
 set(CMAKE_CXX_STANDARD 20)
-
+set(HOME_DIRECTORY $ENV{HOME})
+set(CSPICE_PATH ${HOME_DIRECTORY}/Coding/cspice)
 
 set(INC_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -27,43 +28,20 @@ set(LMB_HEADERS
 )
 
 
-set(CMAKE_CXX_FLAGS_PROFILING "-O2 -g -pg" CACHE STRING
-    "Flags used by the C++ compiler during Profiling builds."
-    FORCE )
-set(CMAKE_C_FLAGS_PROFILING "-O2 -g -pg" CACHE STRING
-    "Flags used by the C compiler during Profiling builds."
-    FORCE )
-set(CMAKE_EXE_LINKER_FLAGS_PROFILING
-    "-pg" CACHE STRING
-    "Flags used for linking binaries during Profiling builds."
-    FORCE )
-set(CMAKE_SHARED_LINKER_FLAGS_PROFILING
-    "-pg" CACHE STRING
-    "Flags used by the shared libraries linker during Profiling builds."
-    FORCE )
-mark_as_advanced(
-    CMAKE_CXX_FLAGS_PROFILING
-    CMAKE_C_FLAGS_PROFILING
-    CMAKE_EXE_LINKER_FLAGS_PROFILING
-    CMAKE_SHARED_LINKER_FLAGS_PROFILING
-)
-
-# Update the documentation string of CMAKE_BUILD_TYPE for GUIs
-set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Profiling."
-    FORCE )
-    
 
 add_executable(
     ${PROJECT_NAME}
     ${LMB_SOURCES}
     ${LMB_HEADERS}
+    
 )
 
 
 target_compile_options(
     ${PROJECT_NAME}
     PRIVATE
+  
+    -lm
     -Wall
     -Wextra
     -Wpedantic
@@ -76,6 +54,6 @@ target_include_directories(
     ${INC_DIR}
 )
 
-include_directories(/home/peppe/Coding/cspice/include)
-find_library(CSPICE_LIB NAMES cspice PATHS /home/meoli/Coding/cspice/lib)
-target_link_libraries(Lambert ${IO_Astrodynamics_LIB})
+include_directories(${CSPICE_PATH}/include)
+set(CSPICE_LIB ${CSPICE_PATH}/lib/cspice.a)
+target_link_libraries(Lambert ${CSPICE_LIB})

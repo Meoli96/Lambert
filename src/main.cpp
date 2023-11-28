@@ -1,5 +1,6 @@
 #include <SpiceUsr.h>
 #include <matplot/matplot.h>
+
 #include <Lambert.hpp>
 #include <ThreadPool.hpp>
 #include <Utils.hpp>
@@ -9,16 +10,18 @@
 #include <thread>
 #include <vector>
 
-
 const uint days_in_seconds = 86400;
 
 const uint step = 1;  // Step in days
+const char cspice_lsk[] = "kernel/lsk/naif0012.tls";
+const char cspice_pck[] = "kernel/pck/pck00010.tpc";
+const char cspice_spk[] = "kernel/spk/de432s.bsp";
 
 int main() {
     // Load kernel
-    furnsh_c("kernels/lsk/naif0012.tls");  // Leap seconds kernel
-    furnsh_c("kernels/spk/de432s.bsp");    // Planetary ephemeris kernel
-    furnsh_c("kernels/pck/pck00010.tpc");  // Leap seconds kernel
+    furnsh_c(cspice_lsk);  // Leap seconds kernel
+    furnsh_c(cspice_spk);  // Planetary ephemeris kernel
+    furnsh_c(cspice_pck);  // Leap seconds kernel
 
     // Define vector of departure days, 1 day step for 365 days
     std::vector<SpiceDouble> departure_days(365 * 4);
@@ -63,28 +66,28 @@ int main() {
     // Add jobs to thread pool
     for (size_t i = 0; i < departure_days.size(); ++i) {
         for (size_t j = 0; j < arrival_days.size(); ++j) {
-            pool.addjob(i, j, dep_span, trav_span, res_mat_v[i][j], res_mat_m[i][j]);
+            pool.addjob(i, j, dep_span, trav_span, res_mat_v[i][j],
+                        res_mat_m[i][j]);
         }
     }
     // Wait for jobs to finish
     pool.wait();
     std::cout << "Done!" << std::endl;
 
-    // Plot results
-    matplot::figure();
-    matplot::contour(res_mat_v, departure_days.size(), arrival_days.size());
-    matplot::title("DeltaV to Venus");
-    matplot::xlabel("Departure day");
-    matplot::ylabel("Travel time");
-    matplot::save("deltaV_v.png");
+    // // Plot results
+    // matplot::figure();
+    // matplot::contour(res_mat_v, departure_days.size(), arrival_days.size());
+    // matplot::title("DeltaV to Venus");
+    // matplot::xlabel("Departure day");
+    // matplot::ylabel("Travel time");
+    // matplot::save("deltaV_v.png");
 
-    matplot::figure();
-    matplot::contour(res_mat_m, departure_days.size(), arrival_days.size());
-    matplot::title("DeltaV to Mars");
-    matplot::xlabel("Departure day");
-    matplot::ylabel("Travel time");
-    matplot::save("deltaV_m.png");
-
+    // matplot::figure();
+    // matplot::contour(res_mat_m, departure_days.size(), arrival_days.size());
+    // matplot::title("DeltaV to Mars");
+    // matplot::xlabel("Departure day");
+    // matplot::ylabel("Travel time");
+    // matplot::save("deltaV_m.png");
 
     return 0;
 }
